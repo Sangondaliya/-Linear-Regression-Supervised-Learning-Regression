@@ -1,0 +1,97 @@
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt 
+
+df=pd.read_csv(r"C:\other\FSM\level2_ml\Medical Price Dataset.csv")
+#print(np.sum(df.isna()))
+df['sex']=df['sex'].map({'female':1,'male':0})
+df['region']=df['region'].map({'southeast':0,'southwest':1,'northwest':2,'northeast':3})
+df['smoker']=df['smoker'].map({'yes':1,'no':0})
+data=df[['smoker','age','sex','bmi','children','region','charges']]
+
+
+'''
+data.hist(figsize=(10,10))
+plt.show()
+
+
+figure,axis=plt.subplots(2,4)
+
+axis[0,0].plot(df['age'],df['smoker'])
+axis[0,0].set_title("age")
+axis[0,1].plot(df['sex'],df['smoker'])
+axis[0,1].set_title("sex")
+axis[0,2].plot(df['bmi'],df['smoker'])
+axis[0,2].set_title("bmi")
+axis[0,3].plot(df['region'],df['smoker'])
+axis[0,3].set_title("region")
+axis[1,0].plot(df['charges'],df['smoker'])
+axis[1,0].set_title("charges")
+axis[1,2].plot(df['children'],df['smoker'])
+axis[1,2].set_title("children")
+plt.show()
+
+plt.scatter(df['age'],df['smoker'])
+plt.xlabel("age")
+plt.ylabel("smoker")
+plt.show() 
+
+plt.scatter(df['sex'],df['smoker'])
+plt.xlabel("sex")
+plt.ylabel("smoker")
+plt.show() 
+
+plt.scatter(df['bmi'],df['smoker'])
+plt.xlabel("bmi")
+plt.ylabel("smoker")
+plt.show() 
+
+plt.scatter(df['children'],df['smoker'])
+plt.xlabel("children")
+plt.ylabel("smoker")
+plt.show() 
+
+plt.scatter(df['region'],df['smoker'])
+plt.xlabel("region")
+plt.ylabel("smoker")
+plt.show() 
+
+plt.scatter(df['charges'],df['smoker'])
+plt.xlabel("charges")
+plt.ylabel("smoker")
+plt.show() 
+'''
+train=df[:(int((len(data)*0.8)))]
+test=df[(int((len(data)*0.8))):]
+total=data.shape
+
+print("train",train.shape)
+print("test",test.shape)
+print("total",data.shape)
+
+def slr(i,o):
+    x=i
+    y=o
+    s_yx=(y*x).sum()
+    yx_byn=(y.sum()*x.sum())/len(x)
+    s_xx=(x*x).sum()
+    xx_byn=((x.sum())**2)/len(x)
+    slope=(s_yx-yx_byn)/(s_xx-xx_byn)
+    intercept=(y.mean())-slope* (x.mean())
+     
+    return intercept,slope
+t_i,t_s=slr(train['age'],train['smoker'])
+plt.scatter(train['age'],train['smoker'])
+plt.plot(train['age'], t_s*train['age']+t_i,'-r')
+plt.xlabel("age")
+plt.ylabel("smoker")
+plt.show()
+
+def test(t,intercept,slope):
+    return (t*slope)+intercept
+t_y=[]   
+x=data['age'].values
+for i in range(train.shape[0],total[0]):
+    test_y=test(x[i],t_i,t_s)
+    t_y.append(test_y)
+print(t_y)
